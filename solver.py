@@ -1,8 +1,14 @@
 import os
+try:
+    import clingo
+except():
+    clingo = None
 
 class ASPSolver():
 
     def __init__(self, map_config=None, agent_config=None, lp_file=None):
+        if clingo is None:
+            raise RuntimeError('Install clingo first!')
         if lp_file is None:
             parsed_map, parsed_agents = self.parse(map_config, agent_config)
             lp_file = self.encode(parsed_map, parsed_agents)
