@@ -16,6 +16,7 @@ class ASPSolver():
 
     def solve(self):
         os.system(f'clingo {self.lp_file} > tmp.sol')
+        print(f'Policy saved as tmp.sol\n')
 
         p1, p2 = dict(), dict()
         with open('tmp.sol', 'r') as f:

@@ -3,46 +3,65 @@ import numpy as np
 
 class Game():
 
-    def __init__(self, starts, goals, agents):
-        self.init_state = (starts[0], starts[1], goals[0], goals[1])
-        self.reach_goal = (0, 0)
+    def __init__(self, starts, goals, agents, layout):
+        self.init_state = {
+            'POSITIONS': starts,
+            'GOALS': goals,
+        }
+        self.reach_goal = np.zeros(len(agents))
         self.agents = agents
+        self.layout = layout
+
+    def pos_profile(self, state):
+        profile = []
+        for i, agent in enumerate(self.agents):
+            profile.append(state['POSITIONS'][agent.name])
+        return profile
 
     def is_end(self):
-        return np.all(self.reach_goal == (1, 1))
+        # print(self.reach_goal)
+        return np.all(self.reach_goal == np.ones(len(self.reach_goal)))
 
     def run(self):
         state = self.init_state
-        histry = [state]
+        histry = [self.pos_profile(state)]
         while True:
-            print(state)
-            o1 = self.agents[0].observe(state)
-            o2 = self.agents[1].observe((state[1],
-                                         state[0],
-                                         state[2],
-                                         state[3]))
-            a1 = self.agents[0].get_action(o1)
-            a2 = self.agents[1].get_action(o2)
-            print(f'1: {o1} -> {a1}')
-            print(f'2: {o2} -> {a2}')
-            print('-----\n')
-            succ1 = self.agents[0].move(state[0], a1)
-            succ2 = self.agents[1].move(state[1], a2)
-            if (succ2, succ1) == state[:2]:
-                print('Edge conflict!')
-                break
-            elif succ1 == succ2:
-                print('Vertex conflict!')
-                break
-            state = (succ1, succ2, state[2], state[3])
-            if state in histry:
-                print(f'Loop back to {state}!')
-                break
-            histry.append(state)
+            pred_profile = self.pos_profile(state)
+            print(pred_profile)
 
-            self.reach_goal = tuple((int(state[0] == state[2]),
-                                     int(state[1] == state[3])))
-            if self.is_end():
-                print('Goals reached!')
+            succ_profile = []
+            for agent in self.agents:
+                obs = agent.observe(state)
+                action = agent.get_action(obs)
+                print(f'{agent.name}: {obs} -> {action}')
+                succ_profile.append(agent.move(state['POSITIONS'][agent.name],
+                                               action))
+
+            for i in range(len(succ_profile)):
+                for j in range(i + 1, len(succ_profile)):
+                    if succ_profile[i] == succ_profile[j]:
+                        print('Vertex conflict: '
+                              '{pred_profile[i]}-{pred_profile[j]}!')
+                        break
+                    elif succ_profile[i] == pred_profile[j] and \
+                            succ_profile[j] == pred_profile[i]:
+                        print('Edge conflict: '
+                              '{pred_profile[i]}-{pred_profile[j]}!')
+                        break
+
+            if succ_profile in histry:
+                print(f'Loop back to {succ_profile}!')
                 break
+
+            histry.append(succ_profile)
+            for i, agent in enumerate(self.agents):
+                state['POSITIONS'][agent.name] = succ_profile[i]
+                self.reach_goal[i] = int(state['POSITIONS'][agent.name]
+                                         == state['GOALS'][agent.name])
+
+            print('\t|\n\tV')
+            if self.is_end():
+                print('Goals reached!\n')
+                break
+
         return histry

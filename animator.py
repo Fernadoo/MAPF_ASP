@@ -21,7 +21,7 @@ class Animation:
             self.goals.append((goal[1], len(self.my_map[0]) - 1 - goal[0]))
         self.paths = []
         if history:
-            for i in range(2):
+            for i in range(len(starts)):
                 self.paths.append([])
                 for state in history:
                     self.paths[-1].append(

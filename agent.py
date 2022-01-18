@@ -2,14 +2,20 @@ import numpy as np
 
 class Agent():
 
-    def __init__(self, name, policy, sensor=None):
+    def __init__(self, name, policy, sensor, layout):
         self.name = name
         self.policy = policy
-        self.sensor = sensor
+        self.R = len(sensor) // 2
+        self.layout = layout
 
     def observe(self, game_state):
-        me, other = game_state[:2]
-        if abs(other[0] - me[0]) <= 1 and abs(other[1] - me[1]) <= 1:
+        me, other, obs = None, None, None
+        for name in game_state['POSITIONS']:
+            if name == self.name:
+                me = game_state['POSITIONS'][name]
+            else:
+                other = game_state['POSITIONS'][name]
+        if abs(other[0] - me[0]) <= self.R and abs(other[1] - me[1]) <= self.R:
             obs = other
         else:
             obs = None
@@ -27,6 +33,10 @@ class Agent():
         if succ[0] not in range(3) or \
                 succ[1] not in range(3) or \
                 succ == (1, 1):
+            raise ValueError('Illegal action!')
+        if succ[0] not in range(len(self.layout)) or \
+                succ[1] not in range(len(self.layout[0])) or \
+                self.layout[succ] == 1:
             raise ValueError('Illegal action!')
         return succ
 

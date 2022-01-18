@@ -86,8 +86,10 @@ def get_args():
     args.agents = parse_agent_from_file(args.agents)
     args.map = parse_map_from_file(args.map)
     args.goals = parse_goals(args.goals)
-    args.lp_file = 'examples/' + args.lp_file
-    args.save = 'results/' + args.save
+    if args.lp_file:
+        args.lp_file = 'examples/' + args.lp_file
+    if args.save:
+        args.save = 'results/' + args.save
 
     return args
 
@@ -105,30 +107,48 @@ def show_args(args):
         print('-------------\n')
 
 
+def get_starts(agents):
+    starts = dict()
+    for name in agents:
+        char = input(f'Specify an initial position for agent {name}: ')
+        if char.lower() == 'n':
+            print('Program terminates')
+            return None
+        starts[name] = eval(char.replace(' ', ','))
+    return starts
+
+
 if __name__ == '__main__':
     args = get_args()
     show_args(args)
 
-    exit()
-    solver = ASPSolver(lp_file='examples/poma2asp.lp')
+    solver = ASPSolver(lp_file=args.lp_file)
     policies = solver.solve()
 
-    agent1 = Agent(name='p1', policy=policies['p1'])
-    agent2 = Agent(name='p2', policy=policies['p2'])
+    starts = get_starts(args.agents)
+    while starts:
+        print('\nSTARTS:')
+        print(starts)
+        print('-------------\n')
 
-    starts = ((2, 1), (0, 2))
-    goals = ((0, 1), (2, 0))
-    game = Game(starts, goals, agents=[agent1, agent2])
-    history = game.run()
-    # print(history)
+        agents = []
+        for name in args.agents:
+            agents.append(Agent(name=name,
+                                policy=policies[name],
+                                sensor=args.agents[name],
+                                layout=args.map))
 
-    layout = np.array(
-        [[0, 0, 0],
-         [0, 1, 0],
-         [0, 0, 0]]
-    )
-    if args.vis:
-        animator = Animation(layout, starts, goals, history)
-        animator.show()
-        if args.save:
-            animator.save('results/pomapf.gif', speed=1)
+        game = Game(starts, args.goals, agents=agents, layout=args.map)
+        history = game.run()
+        # print(history)
+
+        if args.vis:
+            animator = Animation(args.map,
+                                 list(starts.values()),
+                                 list(args.goals.values()),
+                                 history)
+            animator.show()
+            if args.save:
+                animator.save(file_name=args.save, speed=1)
+
+        starts = get_starts(args.agents)
