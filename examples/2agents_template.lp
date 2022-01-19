@@ -1,27 +1,3 @@
-%*
-Map
-...
-.#.
-...
-
-Sensor
-...
-.o.
-...
-*%
-
-% Grid world
-cell(0..4, 0..4).
-block(1,2..3).
-block(2,2).
-block(3,2).
-
-
-% Set goals to any pair of different positions
-goal1(G) :- G = (0, 1).
-goal2(G) :- G = (2, 0).
-
-
 % Formatting global states
 gState(S) :- S = (L1, L2, G1, G2),
     L1 != L2, goal1(G1), goal2(G2),
@@ -121,20 +97,3 @@ p2(L1,L2,A) :- do2((L1, L2, _), A).
 
 #show p1/3.
 #show p2/3.
-% #show do1/2.
-% #show do2/2.
-% #show obs1/2.
-% #show reached/1.
-% #show gState/1.
-% #show detect/2.
-% #show aState/1.
-% #show action/3.
-% #show goal1_aState/1.
-% #show goal_gState/1.
-
-
-
-
-
-
-

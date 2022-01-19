@@ -6,16 +6,29 @@ except():
 
 class ASPSolver():
 
-    def __init__(self, map_config=None, agent_config=None, lp_file=None):
+    def __init__(self, map_config=None, agent_config=None, goal_config=None,
+                 lp_file=None):
         if clingo is None:
             raise RuntimeError('Install clingo first!')
         if lp_file is None:
-            parsed_map, parsed_agents = self.parse(map_config, agent_config)
-            lp_file = self.encode(parsed_map, parsed_agents)
+            lp_file = self.parse(map_config,
+                                 agent_config,
+                                 goal_config)
         self.lp_file = lp_file
 
-    def parse(self, map_config, agent_config):
-        pass
+    def parse(self, map_config, agent_config, goal_config):
+        with open('tmp.lp', 'w') as lp:
+            lp.write(f'cell(0..{len(map_config) - 1}, '
+                     f'0..{len(map_config[0]) - 1}).\n')
+            for i in range(len(map_config)):
+                for j in range(len(map_config[0])):
+                    if map_config[i, j] == 1:
+                        lp.write(f'block({i}, {j}).\n')
+            for name in goal_config:
+                i = eval(name.split('p')[-1])
+                lp.write(f'goal{i}(G) :- G = {goal_config[name]}.\n')
+        os.system('cat examples/2agents_template.lp >> tmp.lp')
+        return 'tmp.lp'
 
     def encode(self, parsed_map, parsed_agents):
         pass

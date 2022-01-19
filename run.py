@@ -122,7 +122,10 @@ if __name__ == '__main__':
     args = get_args()
     show_args(args)
 
-    solver = ASPSolver(lp_file=args.lp_file)
+    solver = ASPSolver(map_config=args.map,
+                       agent_config=args.agents,
+                       goal_config=args.goals,
+                       lp_file=args.lp_file)
     policies = solver.solve()
 
     starts = get_starts(args.agents)

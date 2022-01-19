@@ -30,9 +30,9 @@ class Agent():
             'right': [0, 1],
         }
         succ = tuple(np.add(curr, action_dict[A]))
-        if succ[0] not in range(3) or \
-                succ[1] not in range(3) or \
-                succ == (1, 1):
+        if succ[0] not in range(len(self.layout)) or \
+                succ[1] not in range(len(self.layout[0])) or \
+                self.layout[succ] == 1:
             raise ValueError('Illegal action!')
         if succ[0] not in range(len(self.layout)) or \
                 succ[1] not in range(len(self.layout[0])) or \

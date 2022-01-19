@@ -1,6 +1,6 @@
 # Partially Observable Multi-Agent Path Finding via Answer Set Programming
 
-<img src="results/pomapf.gif" alt="3x3 Grid World" style="zoom:33%;" />
+<img src="results/medium.gif" alt="3x3 Grid World" style="zoom:33%;" />
 
 ### Dependence:
 

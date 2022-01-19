@@ -11,8 +11,8 @@ FPS = 60
 
 class Animation:
     def __init__(self, my_map, starts, goals, history):
-        # self.my_map = np.flip(np.transpose(my_map), 1)
-        self.my_map = np.flip(my_map, 0)
+        self.my_map = np.flip(np.transpose(my_map), 1)
+        # self.my_map = np.flip(np.transpose(my_map), 0)
         self.starts = []
         for start in starts:
             self.starts.append((start[1], len(self.my_map[0]) - 1 - start[0]))
@@ -76,7 +76,7 @@ class Animation:
                           alpha=0.5)
             )
         for i in range(len(self.paths)):
-            name = f'p{i}'
+            name = f'p{i + 1}'
             self.agents[i] = Circle((starts[i][0], starts[i][1]),
                                     0.3,
                                     facecolor=Colors[i % len(Colors)],
