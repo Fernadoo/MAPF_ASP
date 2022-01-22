@@ -21,7 +21,7 @@ trans(S1, A1, ..., An, S2) :- gState(S1), gState(S2),
     L11 = (X11, Y11), ..., L1n = (X1n, Y1n),
     L21 = (X21, Y21), ..., L2n = (X2n, Y2n),
     move(X11, Y11, A1, X21, Y21),
-    ...
+    ...,
     move(X1n, Y1n, An, X2n, Y2n),
     % vertex conflict subsumed in gState(S2)
     % only need to avoid edge conflict (immediate swap)

@@ -1,4 +1,5 @@
 import os
+from itertools import product
 try:
     import clingo
 except():
@@ -30,7 +31,7 @@ class ASPSolver():
                 i = eval(name.split('p')[-1])
                 lp.write(f'goal{i}(G) :- G = {goal_config[name]}.\n')
 
-            # Global settings - global state formatting
+            # Global settings - global states
             n = len(agent_config.keys())
             SLs = ', '.join([f'L{i}' for i in range(1, n + 1)])
             SGs = ', '.join([f'G{i}' for i in range(1, n + 1)])
@@ -47,7 +48,7 @@ class ASPSolver():
                       f'cell(X{i}, Y{i}), ' \
                       f'not block(X{i}, Y{i}),\n'
             goals += '\n'
-            Ls = Ls[:-2] + '.'
+            Ls = Ls[:-2] + '.\n'
             lp.write('gState(S) :-' + S + constraints + goals + Ls)
 
             # Global settings - transition
@@ -64,18 +65,141 @@ class ASPSolver():
                                    for i in range(1, n + 1)])
             move = ',\n'.join([f'move(X1{i}, Y1{i}, A{i}, X2{i}, Y2{i})'
                                for i in range(1, n + 1)])
-            notswap = ''
+            noswap = ''
             for i in range(1, n + 1):
                 for j in range(i + 1, n + 1):
-                    pass
+                    noswap += f'(L1{i}, L1{j}) != (L2{j}, L2{i}), '
+                noswap += '\n'
+            noswap = noswap[:-2] + '.\n'
+            lp.write(f'trans(S1, {action_profile} S2) :- '
+                     + 'gState(S1), gState(S2), '
+                     + S1
+                     + S2
+                     + L1_decomp
+                     + L2_decomp
+                     + move
+                     + noswap)
 
+            # Global settings - moves and actions
+            lp.write(
+                'move(X, Y, up, X-1, Y) :- action(X, Y, up).\n'
+                'move(X, Y, down, X+1, Y) :- action(X, Y, down).\n'
+                'move(X, Y, left, X, Y-1) :- action(X, Y, left).\n'
+                'move(X, Y, right, X, Y+1) :- action(X, Y, right).\n'
+                'move(X, Y, nil, X, Y) :- action(X, Y, nil).\n'
+                '\n'
+                'action(X, Y, up) :- cell(X, Y), cell(X-1, Y),\n'
+                '    not block(X, Y), not block(X-1, Y).\n'
+                'action(X, Y, down) :- cell(X, Y), cell(X+1, Y),\n'
+                '    not block(X, Y), not block(X+1, Y).\n'
+                'action(X, Y, left) :- cell(X, Y), cell(X, Y-1),\n'
+                '    not block(X, Y), not block(X, Y-1).\n'
+                'action(X, Y, right) :- cell(X, Y), cell(X, Y+1),\n'
+                '    not block(X, Y), not block(X, Y+1).\n'
+                'action(X, Y, nil) :- cell(X, Y), cell(X, Y),\n'
+                '    not block(X, Y), not block(X, Y).\n'
+            )
 
+            # Global settings - goal states
+            Gs = ', '.join([f'G{i}' for i in range(1, n + 1)])
+            goals = ', '.join([f'goal{i}(G{i})'])
+            lp.write('goal_gState(S) :- gState(S),\n'
+                     + f'S = ({Gs}, {Gs})'
+                     + goals + '.')
 
+            # Agent settings - agent states
+            Others = ', '.join([f'Other{i}' for i in range(2, n + 1)])
+            nears = ', '.join([f'near(Self, Other{i})'
+                               for i in range(2, n + 1)])
+            lp.write(f'aState(AS) :- AS = (Self, {Others}, Goal),\n'
+                     + 'Self = (X, Y), cell(X, Y), not block(X, Y),\n'
+                     + 'Goal = (Xg, Yg), cell(Xg, Yg), not block(Xg, Yg),\n'
+                     + nears + '.')
 
+            # Agent settings - near
+            Radius = len(agent_config['p1']) // 2
+            lp.write(
+                'near(Self, empty) :- Self = (X1, Y1), cell(X1, Y1).\n'
+                'near(Self, Other) :- Self != Other,\n'
+                '    Self = (X1, Y1), Other = (X2, Y2),\n'
+                f'    |X1-X2| <= {Radius}, |Y1-Y2| <= {Radius},\n'
+                '    cell(X1, Y1), cell(X2, Y2),\n'
+                '    not block(X1, Y1), not block(X2, Y2).\n'
+            )
 
+            # Agent settings - available actions
+            lp.write(
+                'avai_action(AS, Action) :- aState(AS),\n'
+                'AS = (Self' + ', _' * (n - 1) + '),\n'
+                'Self = (X, Y), action(X, Y, Action).\n'
+            )
 
+            # Agent settings - goal agent state
+            for i in range(1, n + 1):
+                lp.write(
+                    f'goal{i}_aState(AS) :- aState(AS),'
+                    f'AS = (G{i}' + ', _' * (n - 1) + f'G{i}), '
+                    f'goal{i}(G{i}).\n'
+                )
 
-        os.system('cat examples/2agents_template.lp >> tmp.lp')
+            # Observation model - exponential reduction
+            Ls = ', '.join([f'L{i}' for i in range(1, n + 1)])
+            Gs = ', '.join([f'G{i}' for i in range(1, n + 1)])
+            for i in range(1, n + 1):
+                Others = [f'L{j}' for j in range(1, n + 1)]
+                Self = Others[i - 1]
+                Others.remove(Self)
+                for profile in product([1, 0], repeat=(n - 1)):
+                    ASs = ''
+                    nears = ''
+                    for j, flag in enumerate(profile):
+                        if flag == 1:
+                            ASs += f'{Others[j]}, '
+                            nears += f'near(Self, {Others[j]}), '
+                        else:
+                            ASs += 'empty, '
+                            nears += f'not near(Self, {Others[j]}), '
+                    AS = f'AS = (Self, {ASs} G{i}),'
+                    nears = nears[:-1] + '.\n'
+                    lp.write(
+                        f'obs{i}(S, AS) :- gState(S),\n'
+                        f'S = ({Ls}, {Gs}), \n'
+                        f'Self = L{i},'
+                        f'(Other2, ..., Othern) = ({", ".join(Others)})\n'
+                        f'aState(AS), {AS},'
+                        + nears
+                    )
+
+            # Policy restrictions
+            for i in range(1, n + 1):
+                lp.write(f'do{i}(AS, nil) :- goal{i}_aState(AS).')
+                lp.write(
+                    '{ ' + f'do{i}(AS, A): avai_action(AS, A)' + ' }'
+                    ' = 1 :- \n'
+                    'aState(AS), '
+                    'AS = (Self' + ', _' * (n - 1) + 'Goal), '
+                    f'Self != Goal, goal{n}(Goal).'
+                )
+
+            # Reachability
+            lp.write('reached(S) :- goal_gState(S).\n')
+            induction = 'reached(S1) :- gState(S1), reached(S2),\n'
+            for i in range(1, n + 1):
+                induction += f'obs{i}(S1, AS{i}), do{i}(AS{i}, A{i}),\n'
+            lp.write(induction)
+            lp.write(f'trans(S1, {action_profile} S2).')
+            lp.write(':- gState(S), not reached(S).')
+
+            # Shorter notation
+            Ls = ', '.join([f'L{i}' for i in range(1, n + 1)])
+            for i in range(1, n + 1):
+                lp.write(f'p{n}({Ls}, A) :- do{i}(({Ls}, _), A).')
+
+            # show results
+            for i in range(1, n + 1):
+                lp.write(f'#show p{i}/{n + 1}.')
+
+        exit()
         return 'tmp.lp'
 
     def encode(self, parsed_map, parsed_agents):
