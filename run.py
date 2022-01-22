@@ -152,6 +152,6 @@ if __name__ == '__main__':
                                  history)
             animator.show()
             if args.save:
-                animator.save(file_name=args.save, speed=1)
+                animator.save(file_name=args.save, speed=100)
 
         starts = get_starts(args.agents)
