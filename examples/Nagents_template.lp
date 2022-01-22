@@ -10,10 +10,10 @@ goaln(G) :- G = (, ).
 % Global settings
 gState(S) :- S = (L1, ..., Ln, G1, ...,Gn),
     Li != Lj, ...  % n(n-1)/2
-    goal1(G1), ..., goaln(Gn)
+    goal1(G1), ..., goaln(Gn),
     L1 = (X1, Y1), cell(X1, Y1), not block(X1, Y1),
     ...,
-    Ln = (Xn, Yn), cell(Xn, Yn), not block(Xn, Yn),
+    Ln = (Xn, Yn), cell(Xn, Yn), not block(Xn, Yn).
 
 trans(S1, A1, ..., An, S2) :- gState(S1), gState(S2),
     S1 = (L11, ..., L1n, G11, ..., G1n),
