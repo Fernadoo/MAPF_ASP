@@ -18,6 +18,8 @@ class ASPSolver():
 
     def parse(self, map_config, agent_config, goal_config):
         with open('tmp.lp', 'w') as lp:
+
+            # Prespecified parameters
             lp.write(f'cell(0..{len(map_config) - 1}, '
                      f'0..{len(map_config[0]) - 1}).\n')
             for i in range(len(map_config)):
@@ -27,6 +29,10 @@ class ASPSolver():
             for name in goal_config:
                 i = eval(name.split('p')[-1])
                 lp.write(f'goal{i}(G) :- G = {goal_config[name]}.\n')
+
+            # Global settings
+            n = len(agent_config.keys())
+            
         os.system('cat examples/2agents_template.lp >> tmp.lp')
         return 'tmp.lp'
 
