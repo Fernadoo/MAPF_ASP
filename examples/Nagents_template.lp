@@ -10,10 +10,10 @@ goaln(G) :- G = (, ).
 % Global settings
 gState(S) :- S = (L1, ..., Ln, G1, ...,Gn),
     Li != Lj, ...  % n(n-1)/2
-    goal1(G1), ..., goaln(Gn)
+    goal1(G1), ..., goaln(Gn),
     L1 = (X1, Y1), cell(X1, Y1), not block(X1, Y1),
     ...,
-    Ln = (Xn, Yn), cell(Xn, Yn), not block(Xn, Yn),
+    Ln = (Xn, Yn), cell(Xn, Yn), not block(Xn, Yn).
 
 trans(S1, A1, ..., An, S2) :- gState(S1), gState(S2),
     S1 = (L11, ..., L1n, G11, ..., G1n),
@@ -21,7 +21,7 @@ trans(S1, A1, ..., An, S2) :- gState(S1), gState(S2),
     L11 = (X11, Y11), ..., L1n = (X1n, Y1n),
     L21 = (X21, Y21), ..., L2n = (X2n, Y2n),
     move(X11, Y11, A1, X21, Y21),
-    ...
+    ...,
     move(X1n, Y1n, An, X2n, Y2n),
     % vertex conflict subsumed in gState(S2)
     % only need to avoid edge conflict (immediate swap)

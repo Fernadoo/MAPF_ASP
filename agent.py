@@ -9,17 +9,18 @@ class Agent():
         self.layout = layout
 
     def observe(self, game_state):
-        me, other, obs = None, None, None
+        me, others = game_state['POSITIONS'][self.name], []
         for name in game_state['POSITIONS']:
             if name == self.name:
-                me = game_state['POSITIONS'][name]
+                continue
             else:
-                other = game_state['POSITIONS'][name]
-        if abs(other[0] - me[0]) <= self.R and abs(other[1] - me[1]) <= self.R:
-            obs = other
-        else:
-            obs = None
-        return (me, obs)
+                a = game_state['POSITIONS'][name]
+                # print(a, me)
+                if abs(a[0] - me[0]) <= self.R and abs(a[1] - me[1]) <= self.R:
+                    others.append(a)
+                else:
+                    others.append(None)
+        return tuple([me] + others)
 
     def move(self, curr, A):
         action_dict = {
