@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # Modified based on USC's MAPF class project
 from matplotlib.patches import Circle, Rectangle
+# from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import numpy as np
 from matplotlib import animation
 
-Colors = ['green', 'blue', 'orange']
+
+# Colors = ['green', 'blue', 'orange']
+Colors = list(mcolors.CSS4_COLORS)
 FPS = 60
 
 
@@ -91,6 +95,8 @@ class Animation:
             self.agent_names[i].set_verticalalignment('center')
             self.artists.append(self.agent_names[i])
 
+        self.sensors = []
+
         self.animation = animation.FuncAnimation(self.fig, self.animate_func,
                                                  init_func=self.init_func,
                                                  frames=int(self.T + 1) * FPS,
@@ -127,6 +133,7 @@ class Animation:
 
         # check drive-drive collisions
         agents_array = [agent for _, agent in self.agents.items()]
+        # sensors = []
         for i in range(0, len(agents_array)):
             for j in range(i + 1, len(agents_array)):
                 d1 = agents_array[i]
@@ -138,8 +145,11 @@ class Animation:
                     d2.set_facecolor('red')
                     print(f"COLLISION! (agent-agent)"
                           "({i}, {j}) at time {t / FPS}")
+                # if np.linalg.norm(pos1 - pos2) < np.sqrt(2):
+                #     sensors.append(Line2D([pos1[0], pos2[0]],
+                #                           [pos1[1], pos2[1]]))
 
-        return self.patches + self.artists
+        return self.patches + self.artists  # + sensors
 
     @staticmethod
     def get_state(t, path):

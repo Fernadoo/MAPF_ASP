@@ -221,16 +221,19 @@ class ASPSolver():
         pass
 
     def solve(self):
-        # os.system(f'clingo {self.lp_file} > tmp.sol')
-        # print(f'Policy saved as tmp.sol\n')
+        os.system(f'clingo {self.lp_file} > tmp.sol')
+        print(f'Policy saved as tmp.sol\n')
 
         n = self.N
         policy = dict(zip([f'p{i}' for i in range(1, n + 1)],
                           [dict() for i in range(n)]))
-        print(policy)
+        # print(policy)
         with open('tmp.sol', 'r') as f:
             line = f.readline()
             while line:
+                if line.startswith('UNSATISFIABLE'):
+                    print('UNSATISFIABLE')
+                    exit()
                 if line.startswith('Answer'):
                     num = eval(line.split(':')[-1])
                     policy['sol_id'] = num

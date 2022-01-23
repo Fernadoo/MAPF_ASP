@@ -43,15 +43,18 @@ def parse_map_from_file(map_config):
     with open(PREFIX + map_config + POSTFIX, 'r') as f:
         line = f.readline()
         while line:
-            row = []
-            for char in line:
-                if char == '.':
-                    row.append(0)
-                elif char == '@':
-                    row.append(1)
-                else:
-                    continue
-            layout.append(row)
+            if line.startswith('#'):
+                pass
+            else:
+                row = []
+                for char in line:
+                    if char == '.':
+                        row.append(0)
+                    elif char == '@':
+                        row.append(1)
+                    else:
+                        continue
+                layout.append(row)
             line = f.readline()
     return np.array(layout)
 
