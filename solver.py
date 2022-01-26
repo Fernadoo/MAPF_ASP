@@ -214,7 +214,7 @@ class ASPSolver():
             for i in range(1, n + 1):
                 lp.write(f'#show p{i}/{n + 1}.\n')
 
-        # exit()
+        print('Logic program translated.')
         return 'tmp.lp'
 
     def encode(self, parsed_map, parsed_agents):

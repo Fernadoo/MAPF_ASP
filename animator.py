@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Modified based on USC's MAPF class project
 from matplotlib.patches import Circle, Rectangle
-# from matplotlib.lines import Line2D
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
@@ -79,6 +79,8 @@ class Animation:
                           edgecolor='black',
                           alpha=0.5)
             )
+
+        self.sensors = dict()
         for i in range(len(self.paths)):
             name = f'p{i + 1}'
             self.agents[i] = Circle((starts[i][0], starts[i][1]),
@@ -95,7 +97,14 @@ class Animation:
             self.agent_names[i].set_verticalalignment('center')
             self.artists.append(self.agent_names[i])
 
-        self.sensors = []
+            for j in range(i + 1, len(self.paths)):
+                line = Line2D((starts[i][0], starts[j][0]),
+                              (starts[i][1], starts[j][1]),
+                              color='black',
+                              linestyle='dotted',
+                              alpha=0)
+                self.sensors[f'{i}-{j}'] = line
+                self.artists.append(line)
 
         self.animation = animation.FuncAnimation(self.fig, self.animate_func,
                                                  init_func=self.init_func,
@@ -145,9 +154,12 @@ class Animation:
                     d2.set_facecolor('red')
                     print(f"COLLISION! (agent-agent)"
                           "({i}, {j}) at time {t / FPS}")
-                # if np.linalg.norm(pos1 - pos2) < np.sqrt(2):
-                #     sensors.append(Line2D([pos1[0], pos2[0]],
-                #                           [pos1[1], pos2[1]]))
+
+                self.sensors[f'{i}-{j}'].set_xdata((pos1[0], pos2[0]))
+                self.sensors[f'{i}-{j}'].set_ydata((pos1[1], pos2[1]))
+                self.sensors[f'{i}-{j}'].set(alpha=0)
+                if np.linalg.norm(pos1 - pos2) <= np.sqrt(2) * 1:
+                    self.sensors[f'{i}-{j}'].set(alpha=0.5)
 
         return self.patches + self.artists  # + sensors
 
