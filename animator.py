@@ -14,7 +14,8 @@ FPS = 60
 
 
 class Animation:
-    def __init__(self, my_map, starts, goals, history):
+    def __init__(self, agents, my_map, starts, goals, history):
+        self.radius = len(agents['p1']) // 2
         self.my_map = np.flip(np.transpose(my_map), 1)
         # self.my_map = np.flip(np.transpose(my_map), 0)
         self.starts = []
@@ -158,7 +159,10 @@ class Animation:
                 self.sensors[f'{i}-{j}'].set_xdata((pos1[0], pos2[0]))
                 self.sensors[f'{i}-{j}'].set_ydata((pos1[1], pos2[1]))
                 self.sensors[f'{i}-{j}'].set(alpha=0)
-                if np.linalg.norm(pos1 - pos2) <= np.sqrt(2) * 1:
+                # if np.linalg.norm(pos1 - pos2) <= np.sqrt(2) * self.radius:
+                #     self.sensors[f'{i}-{j}'].set(alpha=0.5)
+                if abs(pos1[0] - pos2[0]) <= self.radius and \
+                        abs(pos1[1] - pos2[1]) <= self.radius:
                     self.sensors[f'{i}-{j}'].set(alpha=0.5)
 
         return self.patches + self.artists  # + sensors

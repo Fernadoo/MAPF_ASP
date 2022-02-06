@@ -149,7 +149,8 @@ if __name__ == '__main__':
         # print(history)
 
         if args.vis:
-            animator = Animation(args.map,
+            animator = Animation(args.agents,
+                                 args.map,
                                  list(starts.values()),
                                  list(args.goals.values()),
                                  history)

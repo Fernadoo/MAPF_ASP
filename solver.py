@@ -1,4 +1,5 @@
 import os
+import time
 from itertools import product
 try:
     import clingo
@@ -221,7 +222,11 @@ class ASPSolver():
         pass
 
     def solve(self):
+        t0 = time.time()
         os.system(f'clingo {self.lp_file} > tmp.sol')
+        t1 = time.time()
+
+        print(f'Solving time: {t1 - t0}')
         print(f'Policy saved as tmp.sol\n')
 
         n = self.N
