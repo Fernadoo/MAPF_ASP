@@ -88,12 +88,14 @@ class Animation:
                                     0.3,
                                     facecolor=Colors[i % len(Colors)],
                                     edgecolor='black')
+
             self.agents[i].original_face_color = Colors[i % len(Colors)]
             self.patches.append(self.agents[i])
             self.T = max(self.T, len(self.paths[i]) - 1)
-            self.agent_names[i] = self.ax.text(starts[i][0],
-                                               starts[i][1],
+            self.agent_names[i] = self.ax.text(self.starts[i][0],
+                                               self.starts[i][1],
                                                name)
+
             self.agent_names[i].set_horizontalalignment('center')
             self.agent_names[i].set_verticalalignment('center')
             self.artists.append(self.agent_names[i])
