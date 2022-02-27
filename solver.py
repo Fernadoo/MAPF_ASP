@@ -9,14 +9,19 @@ except():
 class ASPSolver():
 
     def __init__(self, map_config=None, agent_config=None, goal_config=None,
-                 lp_file=None):
+                 lp_file=None, sol_file=None):
         if clingo is None:
             raise RuntimeError('Install clingo first!')
-        if lp_file is None:
-            lp_file = self.parse(map_config,
-                                 agent_config,
-                                 goal_config)
-        self.lp_file = lp_file
+        if sol_file:
+            self.sol_file = sol_file
+        else:
+            if lp_file is None:
+                lp_file = self.parse(map_config,
+                                     agent_config,
+                                     goal_config)
+            self.lp_file = lp_file
+            self.sol_file = None
+
         self.N = len(agent_config.keys())
 
     def parse(self, map_config, agent_config, goal_config):
@@ -222,18 +227,24 @@ class ASPSolver():
         pass
 
     def solve(self):
-        t0 = time.time()
-        os.system(f'clingo {self.lp_file} > tmp.sol')
-        t1 = time.time()
+        if self.sol_file:
+            # no need to compute solving time
+            solution_file = self.sol_file
+        else:
+            t0 = time.time()
+            os.system(f'clingo {self.lp_file} > tmp.sol')
+            t1 = time.time()
 
-        print(f'Solving time: {t1 - t0}')
-        print(f'Policy saved as tmp.sol\n')
+            print(f'Solving time: {t1 - t0}')
+            print(f'Policy saved as tmp.sol\n')
+
+            solution_file = 'tmp.sol'
 
         n = self.N
         policy = dict(zip([f'p{i}' for i in range(1, n + 1)],
                           [dict() for i in range(n)]))
         # print(policy)
-        with open('tmp.sol', 'r') as f:
+        with open(f'{solution_file}', 'r') as f:
             line = f.readline()
             while line:
                 if line.startswith('UNSATISFIABLE'):

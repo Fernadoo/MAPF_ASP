@@ -80,6 +80,8 @@ def get_args():
                              'e.g. 2_0 0_2')
     parser.add_argument('--lp-file', dest='lp_file', type=str,
                         help='Use an existing human-written lp file')
+    parser.add_argument('--sol-file', dest='sol_file', type=str,
+                        help='Use an existing human-written solution file')
     parser.add_argument('--vis', dest='vis', action='store_true',
                         help='Visulize the process')
     parser.add_argument('--save', dest='save', type=str,
@@ -128,7 +130,8 @@ if __name__ == '__main__':
     solver = ASPSolver(map_config=args.map,
                        agent_config=args.agents,
                        goal_config=args.goals,
-                       lp_file=args.lp_file)
+                       lp_file=args.lp_file,
+                       sol_file=args.sol_file)
     policies = solver.solve()
 
     starts = get_starts(args.agents)
