@@ -10,6 +10,8 @@ class Game():
         }
         self.reach_goal = np.zeros(len(agents))
         self.agents = agents
+        for agent in self.agents:
+            agent.register(starts[agent.name], goals[agent.name])
         self.layout = layout
 
     def pos_profile(self, state):

@@ -1,4 +1,7 @@
+from search import AStar
+
 import numpy as np
+
 
 class Agent():
 
@@ -7,6 +10,11 @@ class Agent():
         self.policy = policy
         self.R = len(sensor) // 2
         self.layout = layout
+
+    def register(self, start, goal):
+        self.goal = goal
+        self.searcher = AStar(start, goal, self.layout)
+        self.plan = self.seacher.planning(start)
 
     def observe(self, game_state):
         me, others = game_state['POSITIONS'][self.name], []
@@ -31,10 +39,6 @@ class Agent():
             'right': [0, 1],
         }
         succ = tuple(np.add(curr, action_dict[A]))
-        if succ[0] not in range(len(self.layout)) or \
-                succ[1] not in range(len(self.layout[0])) or \
-                self.layout[succ] == 1:
-            raise ValueError('Illegal action!')
         if succ[0] not in range(len(self.layout)) or \
                 succ[1] not in range(len(self.layout[0])) or \
                 self.layout[succ] == 1:

@@ -6,6 +6,7 @@ try:
 except():
     clingo = None
 
+
 class ASPSolver():
 
     def __init__(self, map_config=None, agent_config=None, goal_config=None,
