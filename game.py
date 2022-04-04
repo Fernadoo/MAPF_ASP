@@ -7,6 +7,8 @@ class Game():
         self.init_state = {
             'POSITIONS': starts,
             'GOALS': goals,
+            'AGENTS': dict(zip(list(map(lambda x: x.name, agents)),
+                               agents))
         }
         self.reach_goal = np.zeros(len(agents))
         self.agents = agents
@@ -32,8 +34,12 @@ class Game():
             print(pred_profile)
 
             succ_profile = []
+            observations = dict()
             for agent in self.agents:
-                obs = agent.observe(state)
+                observations[agent.name] = agent.observe(state)
+            for agent in self.agents:
+                obs = observations[agent.name]
+                agent.build_closure(state)
                 action = agent.get_action(obs)
                 print(f'{agent.name}: {obs} -> {action}')
                 succ_profile.append(agent.move(state['POSITIONS'][agent.name],

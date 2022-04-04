@@ -14,10 +14,12 @@ action_dict = {
 class AStar():
     """docstring for AStar"""
 
-    def __init__(self, start, goal, layout):
-        self.start = start
+    def __init__(self, goal, layout):
         self.goal = goal
         self.layout = layout
+
+    def update_layout(self, new_layout):
+        self.layout = new_layout
 
     def get_successors(self, curr):
         successors = []
