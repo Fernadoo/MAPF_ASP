@@ -80,6 +80,7 @@ class Animation:
                           edgecolor='black',
                           alpha=0.5)
             )
+            print(goal)
 
         self.sensors = dict()
         for i in range(len(self.paths)):
@@ -94,6 +95,7 @@ class Animation:
             self.agent_names[i] = self.ax.text(starts[i][0],
                                                starts[i][1],
                                                name)
+            print(starts[i])
             self.agent_names[i].set_horizontalalignment('center')
             self.agent_names[i].set_verticalalignment('center')
             self.artists.append(self.agent_names[i])
