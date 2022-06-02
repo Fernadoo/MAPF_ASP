@@ -97,5 +97,15 @@ reached(S1) :- gState(S1), reached(S2),
     trans(S1, A1, S2).
 :- gState(S), not reached(S).
 
+cost(0..100).
+dist1(S, 0) :- goal_gState(S).
+dist1(S1, C) :- not goal_gState(S1), reached(S1),
+    do1(S1, A1),
+    trans(S1, A1, S2),
+    dist1(S2, C-1), cost(C).
+
+#minimize {C, dist1(S, C): dist1(S, C)}.
+
 p1(L1, A) :- do1((L1, _), A).
 #show p1/2.
+#show dist1/2.
