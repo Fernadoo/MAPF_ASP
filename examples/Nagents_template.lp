@@ -106,6 +106,19 @@ reached(S1) :- gState(S1),
 :- gState(S), not reached(S).
 
 
+% induction on dist from any reachable global state to goal state
+cost(0..#UP).
+dist(S, 0) :- goal_gState(S).
+dist(S1, C) :- not goal_gState(S1), reached(S1),
+    obs1(S1, AS1), do1(AS1, A1),
+    ...,
+    obsn(Sn, ASn), do2(ASn, An),
+    trans(S1, A1, ..., An, S2),
+    dist(S2, C-1), cost(C).
+
+#minimize {C, dist(S, C): dist(S, C)}.
+
+
 % shorter notation
 p1(L1, ..., Ln, A) :- do1((L1, ..., Ln, _), A).
 ...,
