@@ -43,7 +43,7 @@ block(11, 8).
 block(11, 9).
 block(11, 10).
 block(11, 11).
-goal1(G) :- G = (10, 10).
+goal1(G) :- G = (1, 10).
 
 gState(S) :-S = (L1, G1), 
     goal1(G1), 
@@ -104,8 +104,8 @@ dist2(S1, C) :- not goal_gState(S1), reached(S1),
     trans(S1, A1, S2),
     dist2(S2, C-1), cost(C).
 
-#minimize {C, dist2(S, C): dist2(S, C)}.
+% #minimize {C, dist2(S, C): dist2(S, C)}.
 
 p2(L1, A) :- do1((L1, _), A).
 #show p2/2.
-#show dist2/2.
+% #show dist2/2.
