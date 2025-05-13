@@ -6,6 +6,7 @@ try:
 except():
     clingo = None
 
+
 class ASPSolver():
 
     def __init__(self, map_config=None, agent_config=None, goal_config=None,
@@ -216,6 +217,7 @@ class ASPSolver():
                 lp.write(f'#show p{i}/{n + 1}.\n')
 
         print('Logic program translated.')
+        # exit(0)
         return 'tmp.lp'
 
     def encode(self, parsed_map, parsed_agents):

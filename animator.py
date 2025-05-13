@@ -85,15 +85,15 @@ class Animation:
         self.sensors = dict()
         for i in range(len(self.paths)):
             name = f'p{i + 1}'
-            self.agents[i] = Circle((starts[i][0], starts[i][1]),
+            self.agents[i] = Circle((self.starts[i][0], self.starts[i][1]),
                                     0.3,
                                     facecolor=Colors[i % len(Colors)],
                                     edgecolor='black')
             self.agents[i].original_face_color = Colors[i % len(Colors)]
             self.patches.append(self.agents[i])
             self.T = max(self.T, len(self.paths[i]) - 1)
-            self.agent_names[i] = self.ax.text(starts[i][0],
-                                               starts[i][1],
+            self.agent_names[i] = self.ax.text(self.starts[i][0],
+                                               self.starts[i][1],
                                                name)
             print(starts[i])
             self.agent_names[i].set_horizontalalignment('center')
@@ -101,8 +101,8 @@ class Animation:
             self.artists.append(self.agent_names[i])
 
             for j in range(i + 1, len(self.paths)):
-                line = Line2D((starts[i][0], starts[j][0]),
-                              (starts[i][1], starts[j][1]),
+                line = Line2D((self.starts[i][0], self.starts[j][0]),
+                              (self.starts[i][1], self.starts[j][1]),
                               color='black',
                               linestyle='dotted',
                               alpha=0)
