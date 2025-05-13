@@ -3,12 +3,24 @@
 <!-- <img src="results/medium.gif" alt="3x3 Grid World" style="zoom:33%;" /> -->
 <!-- <video src='results/2_rooms.mp4' width=80/> -->
 
-https://user-images.githubusercontent.com/42331572/151119754-e3708d1c-e7d4-47fa-baae-67652e80735c.mp4
 
-### Dependence:
+
+https://github.com/user-attachments/assets/449c64e7-0c40-4b99-8d99-4c2af5992cd8
+
+
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![arXiv](https://img.shields.io/badge/arXiv-2305.16203-b31b1b.svg)](https://arxiv.org/abs/2305.16203)
+[![Formalism](https://img.shields.io/badge/Formalism-ASP-orange)](https://www.cs.utexas.edu/~vl/papers/wiasp.pdf)
+[![Solver](https://img.shields.io/badge/Solver-clingo-navy)](https://potassco.org/clingo/)
+
+
+### Conda Env & Dependence:
 
 ```shell
-pip install -r requirement.txt
+conda create -n mapf python=3.9.7
+conda activate mapf
+pip install -r requirements.txt
 ```
 
 ### Usage:
