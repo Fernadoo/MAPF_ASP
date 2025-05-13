@@ -3,7 +3,7 @@
 <!-- <img src="results/medium.gif" alt="3x3 Grid World" style="zoom:33%;" /> -->
 <!-- <video src='results/2_rooms.mp4' width=80/> -->
 
-![example_policy](/Users/fernando/Documents/MAS/MAPF/MAPF_asp/results/example_policy.png)
+![example_policy](results/example_policy.png)
 
 
 
